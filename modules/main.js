@@ -67,8 +67,8 @@ var messageListener = function(aMessage) {
 
     if (aHandler.script) {
       try {
-        let handler = new Function('href', aHandler.script);
-        handler.call(window, href);
+        let handler = new Function('window', 'href', aHandler.script);
+        handler.call(window, window, href);
       }
       catch(e) {
         console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
