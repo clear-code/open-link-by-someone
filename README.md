@@ -8,5 +8,5 @@ pref("extensions.open-link-by-someone@clear-code.com.ChromeView.patterns",
 pref("extensions.open-link-by-someone@clear-code.com.ChromeView.handler",
      "script");
 pref("extensions.open-link-by-someone@clear-code.com.ChromeView.script",
-     "window.chromeview.launch(href)");
+     "chromeview.launch(href)");
 

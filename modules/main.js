@@ -73,10 +73,8 @@ var messageListener = function(aMessage) {
       case 'script':
         let script = aHandler.script;
         try {
-          let sandbox = new Cu.Sandbox(window.location.href);
-          sandbox.window = window;
-          sandbox.href = href;
-          Cu.evalInSandbox(script, sandbox);
+          let handler = new Function('href', script);
+          handler.call(window, href);
         }
         catch(e) {
           console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
