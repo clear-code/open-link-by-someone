@@ -64,8 +64,8 @@ WindowManager.addHandler(handleWindow);
 
 function shutdown() {
   WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
-    aWindow.messageManager.sendAsyncMessage(messageType,
-                                            { command: 'shutdown' });
+    aWindow.messageManager.broadcastAsyncMessage(messageType,
+                                                 { command: 'shutdown' });
     aWindow.removeEventListener('TabOpen', handleTabOpen, true);
     aWindow.removeEventListener('unload', handleUnload, true);
   });
