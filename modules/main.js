@@ -41,15 +41,11 @@ function loadHandlers() {
 
     var base = matched[1];
 
-    handler.type = prefs.getPref(base + '.handler');
-    switch (handler.type) {
-      case 'script':
-        handler.script = prefs.getPref(base + '.script');
-        handlers.push(handler);
-        return;
-
-      default:
-        return;
+    var script = prefs.getPref(base + '.script');
+    if (script) {
+      handler.script = script;
+      handlers.push(handler);
+      return;
     }
   });
 
@@ -63,25 +59,24 @@ function loadHandlers() {
 
 var messageListener = function(aMessage) {
   var window = aMessage.target.ownerDocument.defaultView;
-
   var href = aMessage.json.href;
+
   handlers.some(function(aHandler) {
     if (!aHandler.matcher.test(href))
       return false;
 
-    switch (aHandler.type) {
-      case 'script':
-        let script = aHandler.script;
-        try {
-          let handler = new Function('href', script);
-          handler.call(window, href);
-        }
-        catch(e) {
-          console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
-          Cu.reportError(e);
-        }
-        break;
+    if (aHandler.script) {
+      try {
+        let handler = new Function('href', aHandler.script);
+        handler.call(window, href);
+      }
+      catch(e) {
+        console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
+        Cu.reportError(e);
+      }
+      break;
     }
+
     return true;
   });
 };
