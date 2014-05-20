@@ -1,7 +1,7 @@
 (function(global) {
   var messageType = 'open-link-by-someone';
   var messageListener = function(aMessage) {
-    switch (aMesasge.json.command) {
+    switch (aMessage.json.command) {
       case 'shutdown':
         global.removeMessageListener(messageType, messageListener);
         content.removeEventListener('click', eventListener, true);
