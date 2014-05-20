@@ -41,7 +41,7 @@ function loadHandlers() {
 
     var base = matched[1];
 
-    var handler.type = prefs.getPref(base + '.handler');
+    handler.type = prefs.getPref(base + '.handler');
     switch (handler.type) {
       case 'script':
         handler.script = prefs.getPref(base + '.script');
