@@ -1,9 +1,10 @@
 (function(global) {
-  var messageType = 'open-link-by-someone';
+  var MESSAGE_TYPE = 'open-link-by-someone';
+
   var messageListener = function(aMessage) {
     switch (aMessage.json.command) {
       case 'shutdown':
-        global.removeMessageListener(messageType, messageListener);
+        global.removeMessageListener(MESSAGE_TYPE, messageListener);
         content.removeEventListener('click', eventListener, true);
         return;
 
@@ -12,12 +13,16 @@
         return;
     }
   };
-  global.addMessageListener(messageType, messageListener);
+  global.addMessageListener(MESSAGE_TYPE, messageListener);
 
   var matcher = null;
 
   var eventListener = function(aEvent) {
-    if (!matcher)
+    if (!matcher ||
+        aEvent.altKey ||
+        aEvent.ctrlKey ||
+        aEvent.shiftKey ||
+        aEvent.metaKey)
       return;
 
     var target = aEvent.target;
@@ -28,12 +33,8 @@
 
     var link = target.href;
     if (matcher.test(link)) {
-      global.sendAsyncMessage(messageType,
-                              { href:     link,
-                                altKey:   aEvent.altKey,
-                                ctrlKey:  aEvent.ctrlKey,
-                                shiftKey: aEvent.shiftKey,
-                                metaKey:  aEvent.metaKey });
+      global.sendAsyncMessage(MESSAGE_TYPE,
+                              { href: link });
       aEvent.preventDefault();
       aEvent.stopImmediatePropagation();
       aEvent.stopPropagation();
