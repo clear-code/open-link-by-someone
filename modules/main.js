@@ -5,30 +5,101 @@
 load('lib/WindowManager');
 load('lib/prefs');
 
-var DOMAIN = 'extensions.open-link-by-someone@clear-code.com.';
+var DOMAIN         = 'extensions.open-link-by-someone@clear-code.com.';
+var CONTENT_SCRIPT = 'chrome://open-link-by-someone/content/content.js?' + Date.now();
+var MESSAGE_TYPE   = 'open-link-by-someone';
 
-var messageType = 'open-link-by-someone';
-var matcher = null;
+var allMatcher = null;
+var handlers   = [];
+
+function loadHandlers() {
+  var globalPatterns = [];
+  handlers = [];
+  prefs.getDescendant(DOMAIN).forEach(function(aKey) {
+    var matched = aKey.match(/(.+)\.patterns$/);
+    if (!matched)
+      return;
+
+    var patterns = prefs.getPref(aKey);
+    patterns = patterns.split(/[\s\|]+/);
+    patterns = patterns.map(function(aPattern) {
+      return aPattern.replace(/\\/g, '\\\\')
+                     .replace(/\./g, '\\.')
+                     .replace(/\?/g, '\\?')
+                     .replace(/\//g, '\\/')
+                     .replace(/\*/g, '\.*')
+                     .replace(/\{/g, '\\{')
+                     .replace(/\}/g, '\\}')
+                     .replace(/\.\*\\./g, '\.*\\.?\\b');
+    });
+    globalPatterns = globalPatterns.concat(patterns);
+
+    var handler = {
+      matcher: new RegExp('^(' + patterns.join('|') + ')')
+    };
+
+    var base = matched[1];
+
+    var handler.type = prefs.getPref(base + '.handler');
+    switch (handler.type) {
+      case 'script':
+        handler.script = prefs.getPref(base + '.script');
+        handlers.push(handler);
+        return;
+
+      default:
+        return;
+    }
+  });
+
+  allMatcher = new RegExp('^(' + globalPatterns.join('|') + ')');
+  WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
+    aWindow.messageManager.broadcastAsyncMessage(MESSAGE_TYPE,
+                                                 { command: 'update-matcher',
+                                                   matcher: allMatcher });
+  });
+}
 
 var messageListener = function(aMessage) {
-  console.log('message from content');
-  console.log(aMessage);
+  var window = aMessage.target.ownerDocument.defaultView;
+
+  var href = aMessage.json.href;
+  handlers.some(function(aHandler) {
+    if (!aHandler.matcher.test(href))
+      return false;
+
+    switch (aHandler.type) {
+      case 'script':
+        let script = aHandler.script;
+        try {
+          let sandbox = new Cu.Sandbox(window.location.href);
+          sandbox.window = window;
+          sandbox.href = href;
+          Cu.evalInSandbox(script, sandbox);
+        }
+        catch(e) {
+          console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
+          Cu.reportError(e);
+        }
+        break;
+    }
+    return true;
+  });
 };
 
 function initTab(aTab) {
-  var script = 'chrome://open-link-by-someone/content/content.js';
   var manager = aTab.linkedBrowser.messageManager;
-  manager.loadFrameScript(script, true);
-  manager.addMessageListener(messageType, messageListener);
-  manager.sendAsyncMessage(messageType,
+  manager.loadFrameScript(CONTENT_SCRIPT, true);
+  manager.addMessageListener(MESSAGE_TYPE, messageListener);
+  manager.sendAsyncMessage(MESSAGE_TYPE,
                            { command: 'update-matcher',
-                             matcher: matcher });
+                             matcher: allMatcher });
 }
 
 function destroyTab(aTab) {
   var manager = aTab.linkedBrowser.messageManager;
-  manager.removeMessageListener(messageType, messageListener);
-  manager.sendAsyncMessage(messageType,
+  manager.removeMessageListener(MESSAGE_TYPE, messageListener);
+  manager.sendAsyncMessage(MESSAGE_TYPE,
                            { command: 'shutdown' });
 }
 
@@ -62,9 +133,11 @@ function handleWindow(aWindow) {
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
 WindowManager.addHandler(handleWindow);
 
+loadHandlers();
+
 function shutdown() {
   WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
-    aWindow.messageManager.broadcastAsyncMessage(messageType,
+    aWindow.messageManager.broadcastAsyncMessage(MESSAGE_TYPE,
                                                  { command: 'shutdown' });
     aWindow.removeEventListener('TabOpen', handleTabOpen, true);
     aWindow.removeEventListener('unload', handleUnload, true);
