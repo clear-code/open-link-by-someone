@@ -23,6 +23,7 @@ function loadHandlers() {
     var patterns = prefs.getPref(aKey);
     patterns = patterns.split(/[\s\|]+/);
     patterns = patterns.map(function(aPattern) {
+      // parse as IE View compatible rules
       return aPattern.replace(/\\/g, '\\\\')
                      .replace(/\./g, '\\.')
                      .replace(/\?/g, '\\?')
