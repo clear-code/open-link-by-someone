@@ -11,7 +11,7 @@ var messageType = 'open-link-by-someone';
 var matcher = null;
 
 var messageListener = function(aMessage) {
-  console.log('message from content';
+  console.log('message from content');
   console.log(aMessage);
 };
 
@@ -38,7 +38,7 @@ function handleTabOpen(aEvent) {
 }
 
 function handleUnload(aEvent) {
-  var view = aEvent.view;
+  var view = (aEvent.target.ownerDocument || aEvent.target).defaultView;
   view.removeEventListener('TabOpen', handleTabOpen, true);
   view.removeEventListener('unload', handleUnload, true);
 }
