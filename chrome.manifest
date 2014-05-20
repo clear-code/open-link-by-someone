@@ -1,4 +1,7 @@
 # These derectives are ignored when this is loaded as a bootstrapped addon.
+
+content	open-link-by-someone	content/
+
 component	{9552bdf0-dfd6-11e3-8b68-0800200c9a66}	components/bundled.js
 contract	@clear-code.com/open-link-by-someone/bundled;1	{9552bdf0-dfd6-11e3-8b68-0800200c9a66}
 category	profile-after-change	open-link-by-someone@clear-code.com_BundledService	@clear-code.com/open-link-by-someone/bundled;1
