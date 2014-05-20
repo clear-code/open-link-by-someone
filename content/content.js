@@ -5,7 +5,9 @@
     switch (aMessage.json.command) {
       case 'shutdown':
         global.removeMessageListener(MESSAGE_TYPE, messageListener);
-        content.removeEventListener('click', eventListener, true);
+        global.removeEventListener('click', eventListener, true);
+        messageListener = null;
+        eventListener = null;
         return;
 
       case 'update-matcher':
