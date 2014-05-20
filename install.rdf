@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:id="open-link-by-someone@clear-code.com"
+                   em:name="Open Link by Someone"
+                   em:version="0.1"
+                   em:creator="ClearCode Inc."
+                   em:description="This is a bridge for any addons which can handle an URI as its input, ex. Chrome View."
+                   em:bootstrap="true"
+                   em:type="2">
+
+    <em:updateURL></em:updateURL>
+    <em:updateKey></em:updateKey>
+
+    <em:localized>
+      <RDF:Description em:locale="en-US"
+                       em:name="Open Link by Someone"
+                       em:description="This is a bridge for any addons which can handle an URI as its input, ex. Chrome View."
+                       em:homepageURL=""
+                       em:creator="ClearCode Inc.">
+      </RDF:Description>
+    </em:localized>
+
+    <!-- Firefox -->
+    <em:targetApplication>
+      <RDF:Description em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+                       em:minVersion="24"
+                       em:maxVersion="99.*" />
+    </em:targetApplication>
+  </RDF:Description>
+</RDF:RDF>
