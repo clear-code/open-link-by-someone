@@ -39,5 +39,5 @@
       aEvent.stopPropagation();
     }
   };
-  content.addEventListener('click', eventListener, true);
+  global.addEventListener('click', eventListener, true);
 })(this);
