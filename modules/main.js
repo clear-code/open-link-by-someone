@@ -18,7 +18,7 @@ var messageListener = function(aMessage) {
 function initTab(aTab) {
   var script = 'chrome://open-link-by-someone/content/content.js';
   var manager = aTab.linkedBrowser.messageManager;
-  manager.loadFromScript(script, true);
+  manager.loadFrameScript(script, true);
   manager.addMessageListener(messageType, messageListener);
   manager.sendAsyncMessage(messageType,
                            { command: 'update-matcher',
