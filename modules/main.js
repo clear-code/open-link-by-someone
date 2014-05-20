@@ -72,9 +72,8 @@ var messageListener = function(aMessage) {
       }
       catch(e) {
         console.log('open-link-by-someone: failed to handle ' + href +', script = ' + aHandler.script);
-        Cu.reportError(e);
+        console.log(e);
       }
-      break;
     }
 
     return true;
