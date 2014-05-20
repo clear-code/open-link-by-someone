@@ -21,6 +21,7 @@
 
   var eventListener = function(aEvent) {
     if (!matcher ||
+        aEvent.button != 0 ||
         aEvent.altKey ||
         aEvent.ctrlKey ||
         aEvent.shiftKey ||
