@@ -40,7 +40,7 @@ function loadHandlers() {
                      .replace(/\}/g, '\\}')
                      .replace(/\.\*\\./g, '\.*\\.?\\b');
     });
-    globalPatterns = globalPatterns.concat(patterns);
+    mydump(' => '+JSON.stringify(patterns));
 
     var handler = {
       matcher: new RegExp('^(' + patterns.join('|') + ')')
@@ -49,20 +49,37 @@ function loadHandlers() {
     var base = matched[1];
 
     var script = prefs.getPref(base + '.script');
+    mydump('HANDLER SCRIPT: '+base + '.script'+' => '+script);
     if (script) {
       handler.script = script;
       handlers.push(handler);
+      globalPatterns = globalPatterns.concat(patterns);
+      mydump('HANDLER REGISTERED: '+uneval(handler));
       return;
     }
   });
 
-  allMatcher = '^(' + globalPatterns.join('|') + ')';
+  if (globalPatterns.length > 0)
+    allMatcher = '^(' + globalPatterns.join('|') + ')';
+  else
+    allMatcher = null;
+
   WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
     aWindow.messageManager.broadcastAsyncMessage(MESSAGE_TYPE,
                                                  { command: 'update-matcher',
                                                    matcher: allMatcher });
   });
 }
+
+var prefListener = {
+  domain: DOMAIN,
+  bserve: function(aSubject, aTopic, aData) {
+    if (aTopic != 'nsPref:changed')
+      return;
+    loadHandlers();
+  }
+};
+prefs.addPrefListener(prefListener);
 
 var messageListener = function(aMessage) {
   mydump('CHRONE MESSAGE LISTENED');
@@ -144,6 +161,8 @@ function shutdown() {
     aWindow.removeEventListener('TabOpen', handleTabOpen, true);
     aWindow.removeEventListener('unload', handleUnload, true);
   });
+
+  prefs.removePrefListener(prefListener);
 
   WindowManager = undefined;
   prefs = undefined;
