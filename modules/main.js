@@ -56,7 +56,7 @@ function loadHandlers() {
     }
   });
 
-  allMatcher = new RegExp('^(' + globalPatterns.join('|') + ')');
+  allMatcher = '^(' + globalPatterns.join('|') + ')';
   WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
     aWindow.messageManager.broadcastAsyncMessage(MESSAGE_TYPE,
                                                  { command: 'update-matcher',
