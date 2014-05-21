@@ -1,7 +1,17 @@
 (function(global) {
+  var DEBUG = false;
+
+  function mydump(aMessage) {
+    if (DEBUG)
+      dump(aMessage +'\n');
+  }
+
+  mydump('CONTENT SCRIPT LOADED');
   var MESSAGE_TYPE = 'open-link-by-someone';
 
   var messageListener = function(aMessage) {
+    mydump('CONTENT MESSAGE LISTENED');
+    mydump(JSON.stringify(aMessage.json));
     switch (aMessage.json.command) {
       case 'shutdown':
         global.removeMessageListener(MESSAGE_TYPE, messageListener);
@@ -34,8 +44,10 @@
     if (!target.href)
       return;
 
+    mydump('CONTENT LINK CLICK ON '+target.href);
     var link = target.href;
     if (matcher.test(link)) {
+      mydump('CONTENT LINK MATCHED!');
       global.sendAsyncMessage(MESSAGE_TYPE,
                               { href: link });
       aEvent.preventDefault();

@@ -5,6 +5,13 @@
 load('lib/WindowManager');
 load('lib/prefs');
 
+var DEBUG = false;
+
+function mydump(aMessage) {
+  if (DEBUG)
+    dump(aMessage +'\n');
+}
+
 var DOMAIN         = 'extensions.open-link-by-someone@clear-code.com.';
 var CONTENT_SCRIPT = 'chrome://open-link-by-someone/content/content.js?' + Date.now();
 var MESSAGE_TYPE   = 'open-link-by-someone';
@@ -58,6 +65,8 @@ function loadHandlers() {
 }
 
 var messageListener = function(aMessage) {
+  mydump('CHRONE MESSAGE LISTENED');
+  mydump(JSON.stringify(aMessage.json));
   var window = aMessage.target.ownerDocument.defaultView;
   var href = aMessage.json.href;
 
