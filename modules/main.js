@@ -23,11 +23,15 @@ function loadHandlers() {
   var globalPatterns = [];
   handlers = [];
   prefs.getDescendant(DOMAIN).forEach(function(aKey) {
+    if (aKey.indexOf(DOMAIN) != 0)
+      return;
+
     var matched = aKey.match(/(.+)\.patterns$/);
     if (!matched)
       return;
 
     var patterns = prefs.getPref(aKey);
+    mydump(aKey+' = '+patterns);
     patterns = patterns.split(/[\s\|]+/);
     patterns = patterns.map(function(aPattern) {
       // parse as IE View compatible rules
@@ -90,6 +94,8 @@ var messageListener = function(aMessage) {
   handlers.some(function(aHandler) {
     if (!aHandler.matcher.test(href))
       return false;
+
+    mydump('HANDLER MATCHED: '+uneval(aHandler));
 
     if (aHandler.script) {
       try {
