@@ -77,7 +77,7 @@ function loadHandlers() {
 
 var prefListener = {
   domain: DOMAIN,
-  bserve: function(aSubject, aTopic, aData) {
+  observe: function(aSubject, aTopic, aData) {
     if (aTopic != 'nsPref:changed')
       return;
     loadHandlers();
