@@ -3,7 +3,7 @@
 
   function mydump(aMessage) {
     if (DEBUG)
-      dump(aMessage +'\n');
+      dump('open-link-by-someone: ' + aMessage + '\n');
   }
 
   mydump('CONTENT SCRIPT LOADED');
